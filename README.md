@@ -35,11 +35,12 @@
 
 | 项目 | 值 |
 | --- | --- |
-| run | [`#42789784021`](https://github.com/Yuzi1204/arcaea-panel-ios/actions/runs/42789784021) ✅ success |
+| run | [`#42793781385`](https://github.com/Yuzi1204/arcaea-panel-ios/actions/runs/42793781385) ✅ success |
 | runner | `macos-15`（Xcode 16.x，iOS 18 SDK） |
 | 产物 | `dist/ArcaeaPanel-unsigned.ipa` · 430 KB |
-| SHA256 | `21359e5f79a29307be4c4399b86c18ae7ce77d44523afe08ed7c76c5b9310e89` |
+| SHA256 | `dcdb2bed11c6c84442286e9246746f734253ad03dda07dc93539dee72b6340f6` |
 | 校验 | Mach-O 64 / arm64 / MH_EXECUTE · `MinimumOSVersion 16.0` · `UIDeviceFamily [1,2]` · 无 `_CodeSignature` · 无 `embedded.mobileprovision` · 含 `Assets.car` 与 iPad 图标 `AppIcon76x76@2x~ipad.png` |
+| 行为 | 只填 `IP:端口` 时自动落到 `/web/login`（私服根路径是 API 兜底，会显示 Hello World） |
 
 仓库 `dist/` 里已经放了一份成品，不想跑 Actions 可以直接下（**Raw** 按钮），签名后装即可。
 
