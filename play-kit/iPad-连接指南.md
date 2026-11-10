@@ -101,6 +101,37 @@ python arcaea-play-kit\check_songs.py
 
 ---
 
+## 6.5 加谱子 / 加自制曲（本机已经装好一首了）
+
+`buzzcutz`（BUZZ CUTZ，BYD 定数 13.0）已经装进服务端并通过校验，用的是本鱼的安装器：
+
+```powershell
+python arcaea-play-kit\install_chart.py "D:\edge下载\buzzcutz.zip"
+```
+
+它做了四件事，其中两件是**踩过才知道的坑**：
+
+1. 文件落到 `database/songs/<曲目id>/`（`3.aff` + `base.ogg` + 封面）
+2. 合并进 `database/songs/songlist`，并**自动补 `"remote_dl": true`**
+   —— 不补的话服务端只放行 `<难度>.aff`、**不放行 `base.ogg`**，曲子进得去但**没声音**
+3. **剔掉 rating=0 的空难度**
+   —— 否则权限位图会告诉客户端「0.aff 可下载」，客户端去要就 404，整首下载失败
+4. 往 `chart` 表写定数（按 ×10 存，13 → 130），服务端算 PTT 要用
+
+装完**必须重启私服**（`songlist` 只在启动时解析一次）。当前状态：
+
+| 项 | 值 |
+| --- | --- |
+| 曲目 id | `buzzcutz` |
+| 权限位图 | `40` = `3.aff`(bit3) + `base.ogg`(bit5) |
+| 可下载文件 | `3.aff`、`base.ogg`（`base.jpg`/`base_256.jpg` 在盘上但不对外，服务端白名单不含图片） |
+| chart 表 | `('buzzcutz','BUZZ CUTZ',-1,-1,-1,130,-1)` |
+| 包 | `base`（免费包）→ 自动解锁，不需要买 |
+
+> ⚠️ 关键前提：**客户端能不能看见这首歌，取决于客户端自带的曲目目录里有没有这个 id**。Arcaea 的歌曲目录（标题/曲师/BPM/难度）是随 App 更新的，服务端不下发目录。如果 `buzzcutz` 不在你客户端的目录里，服务端再怎么配合也显示不出来。
+
+---
+
 ## 7. 排错
 
 | 现象 | 处理 |
