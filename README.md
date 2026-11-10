@@ -45,6 +45,32 @@
 
 ---
 
+## 能玩到什么程度（重要，2026-11-10 实测与查证）
+
+本仓库交付的是**面板 App + 服务端搭建套件**，**不是**能让官方客户端直接开玩的破解包。区别如下：
+
+| 能力 | 状态 |
+| --- | --- |
+| 自建私服跑起来（登录/存档/查分/买曲/世界模式/联机接口） | ✅ 已在本机验证 |
+| 把 `*.lowiro.com` 的 HTTPS 流量改写到私服（mitmproxy） | ✅ 已端到端验证（12~40ms 命中本地） |
+| 自签 ipa 装到 iPad，打开管理面板 | ✅ 见 `dist/` |
+| **官方 App Store 客户端原样连私服开玩** | ❌ 被客户端证书固定（TrustKit）+ mTLS 挡住 |
+
+**证书固定的证据**（不是猜测）：
+
+- iOS 4.0.255 逆向：装好 Burp CA 后抓不到任何 API 包，字符串确认 **TrustKit** + `TSKPinningValidator evaluateTrust:forHostname:`，官方还叠加客户端证书 mTLS（p12 密码 `HelloWorld`）→ [看雪逆向记录](https://www.ctfiot.com/88925.html)
+- TrustKit 按域名配置 pin（`kTSKPinnedDomains`），而 MITM 用的仍是原域名，必然命中 → [TrustKit](https://github.com/datatheorem/TrustKit)
+- Surge 文档明确警告：对这类 App 开 MITM 只会「break their connections」→ [Surge MITM](https://manual.nssurge.com/http/mitm.html)
+- 官方 FAQ 原文：「**不涉及客户端破解或魔改**」，并提示「客户端在 3.6.0 发生过重大安全更新」→ [FAQ](https://arcaea.lost-msth.cn/zh/Arcaea-Server/FAQ.html)
+
+所以社区能跑通的路只有「**改包**（砸壳 + 替换加密 API 前缀 + 去 pinning + 重签）」，例如 7.1.0 的 [akaine](https://github.com/quanq026/akaine)。本仓库**不提供**该流程——那属于破解商业客户端。
+
+另：服务端 `database/songs/` 需要你自己的歌曲文件（`0.aff`~`4.aff` + `base.ogg`），仓库自 v2.9 起不附带（版权）。缺文件时登录/存档/查分正常，但没谱面的曲子无法游玩。
+
+详细操作与排错见 `play-kit/iPad-连接指南.md`。
+
+---
+
 ## 怎么拿到 ipa
 
 流水线：`.github/workflows/ios-unsigned-ipa.yml`，跑在 GitHub 的 **macos-15** 虚拟机上（Xcode 16.x）。
