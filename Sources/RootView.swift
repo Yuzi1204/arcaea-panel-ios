@@ -7,7 +7,7 @@ struct RootView: View {
 
     var body: some View {
         Group {
-            if let url = store.resolvedURL {
+            if let url = panelURL {
                 NavigationStack {
                     panel(baseURL: url)
                 }
@@ -20,6 +20,16 @@ struct RootView: View {
             SettingsSheet()
                 .environmentObject(store)
         }
+    }
+
+    /// 只填了 IP:端口 时，自动落到私服的管理面板登录页（根路径是 API 兜底，会把页面显示成 Hello World）。
+    private var panelURL: URL? {
+        guard let base = store.resolvedURL else { return nil }
+        let path = base.path
+        if path.isEmpty || path == "/" {
+            return base.appendingPathComponent("web").appendingPathComponent("login")
+        }
+        return base
     }
 
     // MARK: - 主面板
@@ -71,7 +81,7 @@ struct RootView: View {
             barButton("chevron.forward", enabled: web.canGoForward) { web.goForward() }
             Spacer()
             barButton("house", enabled: true) {
-                if let url = store.resolvedURL { web.load(url) }
+                if let url = panelURL { web.load(url) }
             }
             Spacer()
             barButton(web.isLoading ? "xmark" : "arrow.clockwise", enabled: true) {
